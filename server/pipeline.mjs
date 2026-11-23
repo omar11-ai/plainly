@@ -175,6 +175,7 @@ Hard rules:
 - Keep every fact, number, date, name, and condition. Never drop a qualifier such as "may", "only", or "up to".
 - Never add information, examples, advice, or opinions.
 - Keep the same meaning and the same level of certainty.
+- Keep technical terms that name a specific idea, such as "retrieval practice" or "slow-wave sleep". You may add a few plain words to explain one, but never replace it with a different idea.
 - Write one clear sentence at a time, around grade 6 to 8 reading level.
 - Prefer short common words and an active voice.
 - If the sentence is already plain, return it unchanged.
