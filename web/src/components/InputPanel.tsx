@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { QUICK_SAMPLE_TEXT, SAMPLE_TEXT } from "../sample";
 import type { ProtectOptions, ReadingLevel } from "../types";
 
@@ -78,6 +78,23 @@ export default function InputPanel({
   const words = text.trim() ? text.trim().split(/\s+/).length : 0;
   const paragraphs = useMemo(() => extractParagraphs(text), [text]);
   const levelIndex = Math.max(0, LEVELS.findIndex((l) => l.id === level));
+
+  // The thumb must sit exactly under the active option. Label widths are unequal,
+  // so a fixed one-quarter step drifts; measure the real button instead.
+  const dialRef = useRef<HTMLDivElement>(null);
+  const [thumb, setThumb] = useState({ x: 4, w: 0 });
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const dial = dialRef.current;
+      const btn = dial?.querySelectorAll<HTMLButtonElement>(".level-dial__btn")[levelIndex];
+      if (!btn) return;
+      setThumb({ x: btn.offsetLeft, w: btn.offsetWidth });
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [levelIndex]);
 
   const addCustomTerm = (raw: string) => {
     const cleaned = raw.trim().replace(/,$/, "");
@@ -219,10 +236,13 @@ export default function InputPanel({
           <p className="level-row__hint">Choose how simple the output should be.</p>
         </div>
 
-        <div className="level-dial" role="radiogroup" aria-label="Target reading level">
+        <div className="level-dial" role="radiogroup" aria-label="Target reading level" ref={dialRef}>
           <div
             className="level-dial__thumb"
-            style={{ transform: `translateX(${levelIndex * 100}%)` }}
+            style={{
+              left: `${thumb.x}px`,
+              width: `${thumb.w}px`
+            }}
             aria-hidden="true"
           />
           {LEVELS.map((item) => (

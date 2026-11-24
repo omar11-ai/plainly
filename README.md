@@ -88,6 +88,16 @@ A separate live contract check exercises the real API end to end — level targe
 node scripts/verify-api.mjs    # 14 checks against a running server
 ```
 
+## Design
+
+A Japanese digital-instrument poster, built from pixel primitives and tuned for dyslexic and ADHD readers.
+
+- **Layout** runs edge to edge: a scroll-reactive pixel rail on the left, a matching rail on the right, and one instrument poster down the middle. Nothing is centred in a narrow column.
+- **Two type roles, deliberately.** Silkscreen carries every label, button, badge, and readout, so the interface itself feels like an instrument; Inter and the Flesch-Kincaid–friendly reading scale carry the sentences people actually read, at 18–24px with generous leading.
+- **The hero is one gradient, not two boxes.** The frame fades from stone canvas on the left into matte carbon on the right, and the chronograph is set *into* that black half — clock, tiles, and amber LCD all live in the same surface.
+- **Pixel affordances** carry the theme without decoration for its own sake: hard offset shadows instead of soft blurs, squared corners, amber registration marks pinned to panel corners, and dithered pixel dividers between sections.
+- **Status colour is cohesive, not clichéd.** Warm amber for live states, muted ash-stone for standby, deep slate-teal for verified, ochre for needs-review. No traffic-light neon.
+
 ## Stack
 
 - **Web:** Vite + React + TypeScript

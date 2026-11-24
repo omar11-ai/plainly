@@ -919,6 +919,15 @@ export default function App() {
             </>
           )}
         </main>
+
+        <aside className="poster-shell__aside" aria-hidden="true">
+          <div className="poster-shell__aside-inner">
+            <span className="poster-shell__aside-block poster-shell__aside-block--amber" />
+            <span className="poster-shell__aside-block poster-shell__aside-block--ink" />
+            <span className="poster-shell__aside-block poster-shell__aside-block--mix" />
+            <span className="poster-shell__aside-note">VERIFIED READER</span>
+          </div>
+        </aside>
       </div>
 
       <footer className="footer">
