@@ -16,12 +16,27 @@ Plainly treats **fidelity as the product**, not a disclaimer.
 
 ## How it works
 
-Two phases, one model load each:
+Three phases, one model load each:
 
-1. **Write.** A 3B model rewrites one sentence at a time. Results stream into the page immediately, marked *Checking meaning*, with the original kept beside the rewrite.
-2. **Check.** The writer is unloaded, a 7B model loads once, and each rewrite is compared against its original in reading order. It looks for dropped qualifiers, changed numbers or names, stronger certainty, and added claims.
+1. **Write.** A 3B model rewrites one unit at a time — sentences in order, headings passed through. Results stream into the page immediately, marked *Checking meaning*, with the original kept beside the rewrite.
+2. **Swap.** The writer is unloaded once and the 7B model loads once.
+3. **Check.** Each rewrite is compared against its original in reading order. It looks for dropped qualifiers, changed numbers or names, stronger certainty, and added claims.
 
-A rewrite that fails the check gets one escalation: the 7B model rewrites it, the result is verified again, and the better version wins. A deterministic pass also checks numbers and proper nouns directly against the source, so a number can never disappear without a flag.
+Every rewrite carries four levers, all client-controlled:
+
+- **Reading level** — Simple (G5–6), Everyday (G7–8), Clear (G9–10), or University (G11–12). The level sets the sentence-length budget and vocabulary, not just a label.
+- **Mode** — Checked (3B → 7B) or Fast (3B only).
+- **Protected terms** — Scientific, Legal / policy, or your own locked phrases. These are extracted as entities and checked verbatim.
+- **Paragraph chunking** — run the whole document, or one paragraph at a time for faster turnaround.
+
+The interesting part is the check. Two independent layers run:
+
+- **Deterministic, before the LLM.** Numbers, dates, acronyms, proper names, and qualifiers are extracted from the source and matched against the rewrite. A number can never disappear without a flag, regardless of what the model says.
+- **A 7B verifier**, which judges whether a reader would learn exactly the same thing, accepting synonyms and split sentences while rejecting changed scope, certainty, or facts.
+
+A rewrite that fails either layer gets one escalation: the 7B rewrites it with the failures as feedback, the result is verified again, and the better version wins.
+
+Each card then shows entity pills for what was checked — `# 20 percent ✓`, `NAME Walker ✓`, `SCOPE roughly ~`. A `✓` means the token survived verbatim. A `~` marks a soft hedge whose wording changed but whose meaning the verifier accepted, so it is deliberately **not** an error. A `✕` means the fact is genuinely gone.
 
 ### Why two phases
 
@@ -29,11 +44,11 @@ The obvious implementation interleaves the models per sentence. On a 6GB GPU tha
 
 | | cold load | warm call |
 |---|---|---|
-| 3B rewrite | 11–15s | ~1–3s |
-| 7B check | 17–21s | ~1.8s |
-| 3B → 7B swap | **24s** | |
+| 3B rewrite | 14.9s | 3.4s |
+| 7B check | 23.8s | 1.5s |
+| 3B → 7B swap | **12–24s** | |
 
-Batching by phase turns N swaps into one. An 8-sentence passage now takes about 90–110 seconds end to end, including both loads and one escalation.
+Batching by phase turns N swaps into one. An 8-sentence passage takes **73 seconds** end to end — 39s writing, 34s checking — including both model loads and any escalations.
 
 ## What the check actually catches
 
@@ -67,6 +82,12 @@ npm run bench    # writer/checker latency and VRAM split on this machine
 
 This is a small, hand-written set — a sanity check and a regression suite, not a benchmark claim. It grew out of real failures observed during the build, including one where the 3B model dropped "tested conditions" and the 7B checker caught it and rewrote the sentence correctly.
 
+A separate live contract check exercises the real API end to end — level targets, locked terms, entity kinds, the phase sequence, writer JSON reliability, and fail-fast errors:
+
+```bash
+node scripts/verify-api.mjs    # 14 checks against a running server
+```
+
 ## Stack
 
 - **Web:** Vite + React + TypeScript
@@ -95,25 +116,32 @@ npm start        # http://127.0.0.1:8787
 
 - `GET /api/health` — Ollama reachability and which models are installed
 - `POST /api/extract` — raw PDF bytes → text
-- `POST /api/simplify` — `{ text, mode }` → NDJSON stream:
-  - `meta`, `phase`, `heading`
+- `POST /api/simplify` — `{ text, mode, level, protect }` → NDJSON stream:
+  - `meta` — sentence count, level, target grade, which models are in use
+  - `phase` — `write`, `swap`, or `verify`
+  - `heading` — passed through without rewriting
   - `sentence` — a rewrite with status `checking` (verified mode) or final (fast mode)
-  - `verify` — the verdict patch for an already-streamed sentence
+  - `verify` — the verdict patch for an already-streamed sentence, carrying `status`, `issues`, `entities`, `escalated`, and `why`
   - `progress`, `done`
+
+`level` is `simple` | `everyday` | `clear` | `university`. `protect` is `{ scientific, legal, customTerms }`, where `customTerms` are phrases that must survive verbatim.
 
 ## Failure handling
 
-- Ollama offline or a model missing → explicit banner, and finished sentences stay on screen
+- Ollama offline or a model missing → fails fast with one named error and a single actionable message, before any card is written
 - Scanned PDF with no text layer → explicit message, never a silent empty result
 - A model call that fails mid-document → that sentence is marked "Not processed" and the rest continue
 - Stop button aborts the stream and keeps what has already been checked
+- No Ollama at all → the landing page offers a replay of a recorded 3B → 7B run, so the UI is still inspectable
 
 ## Honest limitations
 
 - The checker is 7B. It is conservative and will occasionally flag a heavy but faithful paraphrase.
-- On a 6GB GPU the 7B runs partly on CPU (~84% GPU here), which is why checks take about 1.8s each rather than milliseconds.
+- On a 6GB GPU the 7B runs partly on CPU (~84% GPU here), which is why checks take about 1.5s each rather than milliseconds. Chrome and the desktop hold ~4.1GB of the card before Ollama starts.
+- Reading level is enforced by prompt, not by construction. On dense sentences the 3B re-rolls up to three times, but it is a small model and can miss a target; the achieved grade is always shown, never claimed.
+- Flesch-Kincaid counts syllables, so protected technical terms raise the measured floor. *Simple* plus *Scientific kept* on a medical paper sentence lands around grade 7, not grade 6, and that trade-off is displayed rather than hidden.
 - The two-phase design optimises for one document per run. Starting a second document pays both model loads again.
-- English only, one sentence at a time. Long documents are processed sequentially by design, so the page fills in reading order.
+- English only, one unit at a time. Documents are processed in reading order by design, so the page fills top to bottom.
 
 ## AI disclosure
 

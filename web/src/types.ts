@@ -1,5 +1,21 @@
 export type Status = "checking" | "faithful" | "flagged" | "unchanged" | "error";
 
+export type ReadingLevel = "simple" | "everyday" | "clear" | "university";
+
+export interface ProtectOptions {
+  scientific: boolean;
+  legal: boolean;
+  customTerms: string[];
+}
+
+export interface EntityCheck {
+  text: string;
+  kind: "number" | "date" | "acronym" | "name" | "qualifier" | "locked";
+  preserved: boolean;
+  /** Soft hedge: the wording changed, but the 7B verifier decides faithfulness. */
+  soft?: boolean;
+}
+
 export interface Readability {
   grade: number;
   ease: number;
@@ -11,8 +27,10 @@ export interface SentenceResult {
   index: number;
   original: string;
   plain: string;
+  why?: string;
   status: Status;
   issues: string[];
+  entities?: EntityCheck[];
   reason?: string;
   model?: string;
   escalated?: boolean;
@@ -26,6 +44,8 @@ export interface Meta {
   total: number;
   headings: number;
   mode: string;
+  level?: ReadingLevel;
+  targetGrade?: string;
   generator: string;
   verifier: string | null;
 }
@@ -37,14 +57,16 @@ export interface Health {
   verifier: { name: string; installed: boolean };
 }
 
-export type Phase = "write" | "verify";
+export type Phase = "write" | "swap" | "verify";
 
 export interface VerifyPatch {
   type: "verify";
   index: number;
   plain?: string;
+  why?: string;
   status: Status;
   issues: string[];
+  entities?: EntityCheck[];
   reason?: string;
   model?: string;
   escalated?: boolean;

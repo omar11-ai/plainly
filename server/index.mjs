@@ -42,7 +42,7 @@ app.post(
 );
 
 app.post("/api/simplify", async (req, res) => {
-  const { text, mode = DEFAULT_MODE } = req.body || {};
+  const { text, mode = DEFAULT_MODE, level = "everyday", protect = {} } = req.body || {};
   if (typeof text !== "string" || text.trim().length < 20) {
     return res.status(400).json({
       error: "Add at least a couple of sentences to simplify.",
@@ -74,6 +74,8 @@ app.post("/api/simplify", async (req, res) => {
     await processText({
       text,
       mode: mode === "fast" ? "fast" : "verified",
+      level,
+      protect,
       onEvent: send,
       shouldStop: () => closed
     });
@@ -107,8 +109,8 @@ app.get("*", (req, res) => {
   return res.status(503).send("The UI is not built yet. Run: npm run build");
 });
 
-app.listen(PORT, () => {
-  console.log(`Plainly API on http://127.0.0.1:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Plainly API on http://0.0.0.0:${PORT}`);
   console.log(`Generator: ${GENERATOR_MODEL} · Verifier: ${VERIFIER_MODEL}`);
   warmModel(GENERATOR_MODEL).then((ready) => {
     console.log(`Model warm-up: generator ${ready ? "ready" : "unavailable"}`);

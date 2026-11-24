@@ -1,4 +1,4 @@
-import type { Health, StreamEvent } from "./types";
+import type { Health, ProtectOptions, ReadingLevel, StreamEvent } from "./types";
 
 export async function fetchHealth(): Promise<Health> {
   const res = await fetch("/api/health");
@@ -24,18 +24,22 @@ export async function extractPdf(file: File): Promise<{ text: string; pages: num
 export async function streamSimplify({
   text,
   mode,
+  level,
+  protect,
   signal,
   onEvent
 }: {
   text: string;
   mode: "verified" | "fast";
+  level: ReadingLevel;
+  protect: ProtectOptions;
   signal: AbortSignal;
   onEvent: (event: StreamEvent) => void;
 }): Promise<void> {
   const res = await fetch("/api/simplify", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text, mode }),
+    body: JSON.stringify({ text, mode, level, protect }),
     signal
   });
 

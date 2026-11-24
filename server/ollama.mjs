@@ -9,7 +9,7 @@ export class OllamaError extends Error {
   }
 }
 
-async function request(path, init = {}) {
+async function request(path, init = {}, { model } = {}) {
   let res;
   try {
     res = await fetch(`${OLLAMA_URL}${path}`, {
@@ -29,8 +29,9 @@ async function request(path, init = {}) {
   if (!res.ok) {
     const body = await res.text().catch(() => "");
     if (res.status === 404) {
+      const target = model || "qwen2.5:3b";
       throw new OllamaError(
-        "The requested model is not installed. Run: ollama pull qwen2.5:3b",
+        `Model "${target}" is not installed. Run: ollama pull ${target}`,
         "model_missing",
         503
       );
@@ -63,19 +64,23 @@ export async function generate({
   keepAlive = "30m",
   numCtx = 2048
 }) {
-  const res = await request("/api/generate", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model,
-      system,
-      prompt,
-      stream: false,
-      format,
-      keep_alive: keepAlive,
-      options: { temperature, num_predict: numPredict, top_p: 0.9, num_ctx: numCtx }
-    })
-  });
+  const res = await request(
+    "/api/generate",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        system,
+        prompt,
+        stream: false,
+        format,
+        keep_alive: keepAlive,
+        options: { temperature, num_predict: numPredict, top_p: 0.9, num_ctx: numCtx }
+      })
+    },
+    { model }
+  );
   const data = await res.json();
   if (!data?.response) {
     throw new OllamaError("The local model returned an empty answer.", "model_empty");

@@ -1,0 +1,168 @@
+{
+  "ranAt": "2026-11-24T02:54:09.889Z",
+  "summary": {
+    "model": "qwen2.5:7b",
+    "cases": 17,
+    "passed": 17,
+    "accuracy": 1,
+    "falsePositives": 0,
+    "falseNegatives": 0,
+    "meanMs": 4092,
+    "totalSeconds": 69.6
+  },
+  "rows": [
+    {
+      "id": "synonym-1",
+      "note": "plain synonym swap",
+      "expected": true,
+      "got": true,
+      "pass": true,
+      "ms": 2276,
+      "detail": ""
+    },
+    {
+      "id": "synonym-2",
+      "note": "synonyms plus dropped filler words",
+      "expected": true,
+      "got": true,
+      "pass": true,
+      "ms": 1396,
+      "detail": ""
+    },
+    {
+      "id": "qualifier-kept",
+      "note": "hedge and percentage preserved",
+      "expected": true,
+      "got": true,
+      "pass": true,
+      "ms": 1440,
+      "detail": ""
+    },
+    {
+      "id": "number-kept",
+      "note": "year and count preserved",
+      "expected": true,
+      "got": true,
+      "pass": true,
+      "ms": 1459,
+      "detail": ""
+    },
+    {
+      "id": "split-sentence",
+      "note": "one clause turned into its own sentence",
+      "expected": true,
+      "got": true,
+      "pass": true,
+      "ms": 1400,
+      "detail": ""
+    },
+    {
+      "id": "advice-kept",
+      "note": "same caution, simpler words",
+      "expected": true,
+      "got": true,
+      "pass": true,
+      "ms": 1384,
+      "detail": ""
+    },
+    {
+      "id": "dropped-hedge",
+      "note": "may became does",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 5593,
+      "detail": "may help -> consolidates | The rewrite states it as certain."
+    },
+    {
+      "id": "dropped-at-least",
+      "note": "at least removed",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 6637,
+      "detail": "at least 7 hours -> 7 hours | The rewrite removes the qualifier 'at least'."
+    },
+    {
+      "id": "dropped-roughly",
+      "note": "approximation became exact",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 6545,
+      "detail": "roughly 12 -> 12 | The rewrite removes the qualifier 'roughly'."
+    },
+    {
+      "id": "percent-to-most",
+      "note": "30 percent became most",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 6139,
+      "detail": "30 percent -> most | The rewrite uses a less precise and different percentage."
+    },
+    {
+      "id": "species-swap",
+      "note": "mice became people",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 4566,
+      "detail": "mice -> people | changed scope"
+    },
+    {
+      "id": "number-swap",
+      "note": "41 became 14",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 6932,
+      "detail": "41 experiments | 41 -> 14 | different number"
+    },
+    {
+      "id": "dropped-only",
+      "note": "only removed, widening the group",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 5452,
+      "detail": "Only | The rewrite removes the exclusivity of the inclusion criteria."
+    },
+    {
+      "id": "some-to-all",
+      "note": "some became all",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 5605,
+      "detail": "some -> all | The rewrite changes the scope of age groups."
+    },
+    {
+      "id": "reversed-comparison",
+      "note": "difficult became easy",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 5781,
+      "detail": "difficult -> easy | The rewrite changes the rating from difficult to easy."
+    },
+    {
+      "id": "added-cause",
+      "note": "correlation became cause",
+      "expected": false,
+      "got": false,
+      "pass": true,
+      "ms": 5448,
+      "detail": "report -> causes | The rewrite changes the level of certainty."
+    },
+    {
+      "id": "real-world-paraphrase",
+      "note": "found in a live run: heavy paraphrase, same caution",
+      "expected": true,
+      "got": true,
+      "pass": true,
+      "ms": 1503,
+      "detail": ""
+    }
+  ]
+}
