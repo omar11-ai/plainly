@@ -155,4 +155,8 @@ npm start        # http://127.0.0.1:8787
 
 ## AI disclosure
 
-The models that rewrite and verify text run locally and are open-weight (Qwen2.5). No hosted AI service is used at runtime. This project was built with AI coding assistance, which is disclosed in the submission as required.
+**AI used at runtime:** the models that rewrite and verify text run locally and are open-weight (Qwen2.5), served by Ollama on the user's own machine. No hosted AI service is contacted at runtime, and no text ever leaves the computer.
+
+**AI used to build the project:** Plainly was built by a student working with an AI coding assistant. The assistant wrote the pipeline, the streaming API, the eval and benchmark harnesses, and the UI wiring; the project owner set the problem, audience, scope, and architecture, supplied the final visual design, and defined the reading-level and protected-terms behaviour.
+
+Most of the engineering in this repo exists because output was measured rather than trusted. The 17-case fidelity suite, the 14 live API checks, and the latency/VRAM benchmark were all built to answer "does it actually do what it claims?" — and they are what surfaced the reading-level gap, the soft-hedge display bug, and the level-dial misalignment. Every performance and accuracy number quoted in this README was measured on a single RTX 2060 with Chrome running.
