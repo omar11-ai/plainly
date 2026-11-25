@@ -9,6 +9,7 @@
     "build": "vite build",
     "start": "node server/index.mjs",
     "eval": "node eval/run-eval.mjs",
+    "eval-passages": "node eval/run-passages.mjs",
     "bench": "node eval/bench-models.mjs",
     "verify-api": "node scripts/verify-api.mjs"
   },
