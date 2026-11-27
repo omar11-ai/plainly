@@ -1,10 +1,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import InputPanel from "./components/InputPanel";
+import CloudKeyPanel from "./components/CloudKeyPanel";
 import PixelRail from "./components/PixelRail";
 import SeikoHeroInstrument from "./components/SeikoHeroInstrument";
 import SentenceCard from "./components/SentenceCard";
 import SummaryBar from "./components/SummaryBar";
 import { extractPdf, fetchHealth, streamSimplify } from "./api";
+import {
+  cloudReady,
+  CLOUD_MODEL,
+  installCloudProvider,
+  loadKey,
+  maskedKey,
+  removeCloudProvider,
+  runCloudSimplify,
+  saveKey,
+  testKey
+} from "./cloud";
 import {
   QUICK_SAMPLE_TEXT,
   RECORDED_PREVIEW_HEADING,
@@ -68,6 +80,12 @@ export default function App() {
   const [notice, setNotice] = useState<string | null>(null);
   const [health, setHealth] = useState<Health | null>(null);
   const [uploadedFile, setUploadedFile] = useState<{ name: string; pages: number } | null>(null);
+
+  // Hosted-provider state: only reachable when no local API answers.
+  const [cloud, setCloud] = useState(false);
+  const [cloudNonce, setCloudNonce] = useState(0);
+  const [cloudDraft, setCloudDraft] = useState("");
+  const [cloudBusy, setCloudBusy] = useState(false);
 
   // Results toolbar state
   const [filter, setFilter] = useState<"all" | "flagged">("all");
@@ -151,6 +169,24 @@ export default function App() {
       .then(setHealth)
       .catch(() => setHealth(null));
   }, []);
+
+  // No API of our own is reachable, so if a Google key is present the pipeline
+  // runs hosted: install Gemini into the model seam and the same server-side
+  // pipeline — prompts, entity layer, escalation — runs in the browser.
+  useEffect(() => {
+    if (health) {
+      removeCloudProvider();
+      setCloud(false);
+      return; // the local API answers; never route to the cloud
+    }
+    if (loadKey()) {
+      installCloudProvider();
+      setCloud(true);
+    } else {
+      removeCloudProvider();
+      setCloud(false);
+    }
+  }, [health, cloudNonce]);
 
   const stopSpeech = useCallback(() => {
     speechQueueRef.current = [];
@@ -279,7 +315,10 @@ export default function App() {
     }
 
     try {
-      await streamSimplify({
+      // Same interface either way: the hosted run is the very same pipeline,
+      // just with a Google model behind it instead of Ollama.
+      const run = cloud ? runCloudSimplify : streamSimplify;
+      await run({
         text: sourceText,
         mode,
         level,
@@ -297,6 +336,37 @@ export default function App() {
       setElapsed((Date.now() - startedAt.current) / 1000);
     }
   };
+
+  /** Test a pasted key, then keep it and route runs to the hosted pipeline. */
+  const saveCloudKey = async () => {
+    const key = cloudDraft.trim();
+    if (!key || cloudBusy) return;
+    setCloudBusy(true);
+    setNotice(null);
+    const problem = await testKey(key);
+    setCloudBusy(false);
+    if (problem) {
+      setNotice(`Google API key: ${problem}`);
+      return;
+    }
+    saveKey(key);
+    setCloudDraft("");
+    installCloudProvider();
+    setCloud(true);
+    setCloudNonce((n) => n + 1);
+    setNotice(`Using ${CLOUD_MODEL} — simply your text above.`);
+  };
+
+  const clearCloudKey = () => {
+    saveKey("");
+    removeCloudProvider();
+    setCloudDraft("");
+    setCloud(false);
+    setCloudNonce((n) => n + 1);
+    setNotice("Google API key removed. Ollama is back to being the only model.");
+  };
+  /** Re-run the cloud effect after a key changes without a reload. */
+  const refreshCloud = () => setCloudNonce((n) => n + 1);
 
   const startRecordedPreview = () => {
     if (running) return;
@@ -656,6 +726,19 @@ export default function App() {
             onReplayPreview={startRecordedPreview}
             onScrollToInput={scrollToInput}
           />
+
+          {/* Hosted model: only ever offered when no local API answers. */}
+          {!health && (
+            <CloudKeyPanel
+              cloud={cloud}
+              busy={cloudBusy}
+              draft={cloudDraft}
+              onDraft={setCloudDraft}
+              onSave={saveCloudKey}
+              onClear={clearCloudKey}
+              onRefresh={refreshCloud}
+            />
+          )}
 
           {/* 2. Refined Poster Wordmark directly beneath the frame */}
           <section className="wordmark-band" aria-label="Plainly wordmark">

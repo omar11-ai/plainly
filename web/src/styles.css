@@ -2772,3 +2772,109 @@ button:disabled {
     grid-template-columns: 1fr 1fr !important;
   }
 }
+
+/* ==========================================================================
+   Hosted model — the key sits on a dark bar under the hero, matching the
+   instrument's hard edges: square corners, offset shadow, amber for the live
+   state. Never rendered on the local-machine experience.
+   ========================================================================== */
+
+.cloud-bar {
+  --cloud-accent: #b8b4a7;
+
+  display: flex;
+  align-items: center;
+  gap: var(--gap-lg, 22px);
+  margin: 0 0 var(--gap-xl, 34px);
+  padding: 18px 22px;
+  background: var(--carbon);
+  color: var(--cream-12, #cfccc0);
+  border: 2px solid var(--carbon-60, #2c2c27);
+  box-shadow: var(--px-shadow);
+  font-family: var(--font-body);
+}
+
+.cloud-bar.is-live {
+  --cloud-accent: var(--amber, #f08a19);
+}
+
+.cloud-bar__led {
+  flex: 0 0 auto;
+  width: 12px;
+  height: 12px;
+  background: var(--cloud-accent);
+  box-shadow: 0 0 0 3px rgba(184, 180, 167, 0.18);
+}
+
+.cloud-bar.is-live .cloud-bar__led {
+  box-shadow: 0 0 0 3px rgba(240, 138, 25, 0.22);
+}
+
+.cloud-bar__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cloud-bar__body strong {
+  display: block;
+  font-family: var(--font-pixel);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cream, #f4f4ef);
+}
+
+.cloud-bar__sub {
+  display: block;
+  margin-top: 7px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--stone-40, #8b8b81);
+  max-width: 62ch;
+}
+
+.cloud-bar__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.cloud-bar__input {
+  width: 300px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  color: var(--cream, #f4f4ef);
+  background: rgba(255, 255, 255, 0.045);
+  border: 2px solid var(--carbon-60, #2c2c27);
+  border-radius: 0;
+}
+
+.cloud-bar__input::placeholder {
+  color: var(--stone-40, #75756e);
+}
+
+.cloud-bar__input:focus-visible {
+  outline: none;
+  border-color: var(--amber, #f08a19);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+@media (max-width: 900px) {
+  .cloud-bar {
+    flex-wrap: wrap;
+    gap: var(--gap-md, 16px);
+  }
+
+  .cloud-bar__controls {
+    flex: 1 1 100%;
+  }
+
+  .cloud-bar__input {
+    flex: 1 1 auto;
+    width: auto;
+  }
+}

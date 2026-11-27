@@ -1,5 +1,5 @@
 {
-  "ranAt": "2026-11-24T02:54:09.889Z",
+  "ranAt": "2026-11-27T16:31:25.143Z",
   "summary": {
     "model": "qwen2.5:7b",
     "cases": 17,
@@ -7,8 +7,8 @@
     "accuracy": 1,
     "falsePositives": 0,
     "falseNegatives": 0,
-    "meanMs": 4092,
-    "totalSeconds": 69.6
+    "meanMs": 4273,
+    "totalSeconds": 72.6
   },
   "rows": [
     {
@@ -17,7 +17,7 @@
       "expected": true,
       "got": true,
       "pass": true,
-      "ms": 2276,
+      "ms": 14974,
       "detail": ""
     },
     {
@@ -26,7 +26,7 @@
       "expected": true,
       "got": true,
       "pass": true,
-      "ms": 1396,
+      "ms": 1259,
       "detail": ""
     },
     {
@@ -35,7 +35,7 @@
       "expected": true,
       "got": true,
       "pass": true,
-      "ms": 1440,
+      "ms": 1268,
       "detail": ""
     },
     {
@@ -44,7 +44,7 @@
       "expected": true,
       "got": true,
       "pass": true,
-      "ms": 1459,
+      "ms": 1267,
       "detail": ""
     },
     {
@@ -53,7 +53,7 @@
       "expected": true,
       "got": true,
       "pass": true,
-      "ms": 1400,
+      "ms": 1261,
       "detail": ""
     },
     {
@@ -62,7 +62,7 @@
       "expected": true,
       "got": true,
       "pass": true,
-      "ms": 1384,
+      "ms": 1222,
       "detail": ""
     },
     {
@@ -71,7 +71,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 5593,
+      "ms": 4834,
       "detail": "may help -> consolidates | The rewrite states it as certain."
     },
     {
@@ -80,7 +80,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 6637,
+      "ms": 5878,
       "detail": "at least 7 hours -> 7 hours | The rewrite removes the qualifier 'at least'."
     },
     {
@@ -89,7 +89,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 6545,
+      "ms": 5830,
       "detail": "roughly 12 -> 12 | The rewrite removes the qualifier 'roughly'."
     },
     {
@@ -98,7 +98,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 6139,
+      "ms": 5319,
       "detail": "30 percent -> most | The rewrite uses a less precise and different percentage."
     },
     {
@@ -107,7 +107,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 4566,
+      "ms": 3933,
       "detail": "mice -> people | changed scope"
     },
     {
@@ -116,7 +116,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 6932,
+      "ms": 6095,
       "detail": "41 experiments | 41 -> 14 | different number"
     },
     {
@@ -125,7 +125,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 5452,
+      "ms": 4698,
       "detail": "Only | The rewrite removes the exclusivity of the inclusion criteria."
     },
     {
@@ -134,7 +134,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 5605,
+      "ms": 4841,
       "detail": "some -> all | The rewrite changes the scope of age groups."
     },
     {
@@ -143,8 +143,8 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 5781,
-      "detail": "difficult -> easy | The rewrite changes the rating from difficult to easy."
+      "ms": 3981,
+      "detail": "difficult -> easy | opposite rating"
     },
     {
       "id": "added-cause",
@@ -152,7 +152,7 @@
       "expected": false,
       "got": false,
       "pass": true,
-      "ms": 5448,
+      "ms": 4707,
       "detail": "report -> causes | The rewrite changes the level of certainty."
     },
     {
@@ -161,7 +161,7 @@
       "expected": true,
       "got": true,
       "pass": true,
-      "ms": 1503,
+      "ms": 1271,
       "detail": ""
     }
   ]

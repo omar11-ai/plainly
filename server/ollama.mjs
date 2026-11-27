@@ -107,12 +107,26 @@ export function parseJsonLoose(text) {
 }
 
 export async function generateJson(args) {
+  // A hosted provider, when one is installed. The static build has no server
+  // behind it, so the browser installs a Google Gemini client here and the
+  // whole pipeline — prompts, the deterministic entity layer, escalation —
+  // runs unchanged. Held on globalThis so a bundled copy and any dynamically
+  // imported copy of this module share the same hook.
+  const hosted = provider();
+  if (hosted) return hosted.generateJson(args);
+
   const raw = await generate({ ...args, format: "json" });
   const parsed = parseJsonLoose(raw);
   if (!parsed) {
     throw new OllamaError("The local model returned an unreadable answer.", "model_bad_json");
   }
   return parsed;
+}
+
+function provider() {
+  return typeof globalThis === "object" && globalThis
+    ? globalThis.__plainly_provider || null
+    : null;
 }
 
 export async function warmModel(model) {
@@ -136,6 +150,8 @@ export async function warmModel(model) {
  * verification crawls.
  */
 export async function unloadModel(model) {
+  // Nothing to evict from a hosted API; the swap is already free there.
+  if (provider()) return;
   try {
     await fetch(`${OLLAMA_URL}/api/generate`, {
       method: "POST",

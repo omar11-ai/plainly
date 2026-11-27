@@ -11,7 +11,8 @@
     "eval": "node eval/run-eval.mjs",
     "eval-passages": "node eval/run-passages.mjs",
     "bench": "node eval/bench-models.mjs",
-    "verify-api": "node scripts/verify-api.mjs"
+    "verify-api": "node scripts/verify-api.mjs",
+    "smoke-cloud": "node scripts/smoke-cloud.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",

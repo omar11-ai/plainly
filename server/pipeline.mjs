@@ -675,7 +675,12 @@ export async function processText({
   const units = splitUnits(text);
   const sentences = units.filter((u) => u.type === "sentence");
   const headings = units.filter((u) => u.type === "heading");
-  const verifying = mode === "verified" && VERIFIER_MODEL !== GENERATOR_MODEL;
+  // "Verified" must mean the check actually runs. This used to compare the two
+  // model names as a proxy, which is wrong for a hosted provider: one model
+  // serves both roles there (the swap costs nothing), so the check silently
+  // never happened. Comparing names also silently disabled verification for
+  // anyone who pointed both env vars at the same model.
+  const verifying = mode === "verified";
 
   onEvent({
     type: "meta",
