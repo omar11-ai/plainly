@@ -63,7 +63,10 @@ export default function SeikoHeroInstrument({
     return () => window.clearInterval(id);
   }, []);
 
-  const isOffline = health != null && !health.ollama;
+  // health is null when the API is unreachable at all — a static deployment
+  // with no server behind it. That is the same state for the reader as Ollama
+  // being installed but not running: show the recorded preview either way.
+  const isOffline = health == null || !health.ollama;
   const hours = String(nowClock.getHours()).padStart(2, "0");
   const mins = String(nowClock.getMinutes()).padStart(2, "0");
   const secs = String(nowClock.getSeconds()).padStart(2, "0");

@@ -603,7 +603,9 @@ export default function App() {
 
   // Non-cliché Seiko-palette status indicator (Amber = live, Slate-stone = offline/standby)
   const healthStatus = useMemo(() => {
-    if (health == null) return { state: "standby" as const, text: "CHECKING LOCAL…" };
+    // null health means the API could not be reached at all, not that the
+    // machine is still checking — say so, rather than spinning forever.
+    if (health == null) return { state: "standby" as const, text: "DEMO · NO API" };
     if (!health.ollama) return { state: "standby" as const, text: "DEMO · OLLAMA OFF" };
     if (!health.generator.installed) {
       return { state: "standby" as const, text: `PULL ${health.generator.name}` };
