@@ -6,6 +6,12 @@ Plainly turns dense text into plain language, sentence by sentence, and checks e
 
 Built for the **Global AI Builder's Challenge 2026**.
 
+**Look at it without installing anything:** <https://omar11-ai.github.io/plainly/>
+— a static build with no API behind it, so it offers the recorded 3B → 7B
+verified run and the whole interface: the telemetry deck, the word diffs, the
+entity pills and the change audit. Simplifying your own text needs Ollama
+locally, which is the point of the project.
+
 ---
 
 ## The problem
